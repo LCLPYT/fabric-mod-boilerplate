@@ -18,6 +18,14 @@ Example:
 git tag 1.0.0
 ```
 
+### Common pitfall: "Could not determine version"
+If your gradle builds fails, and you get this error message:
+```
+Caused by: java.lang.IllegalStateException: Could not determine version
+```
+The issue is, that there are no tags in your Git repository yet.
+You may just tag the current commit with `git tag 0.1.0`, indicating it is a pre-release.
+
 ## Publishing
 If you want to publish your mod from CLI, you can create a `publish.properties` file in the project root.
 The contents should look like this:
