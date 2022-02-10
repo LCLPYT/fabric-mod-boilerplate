@@ -5,9 +5,10 @@ A boilerplate to quickly setup a fabric mod.
 - `gradle.properties`:
 Change `maven-group` and `archives_base_name`; configure Fabric versions if needed
 - rename base package name in `src/main/java/org/example/modid`, insert your custom modid
-- `src/main/resources/fabric.mod.json`: change `modid`, `name`, `description`, `authors`, `entrypoints/{main,client}`, `mixins` (adjust `modid.mixins.json`)
+- `src/main/resources/fabric.mod.json`: change `modid`, `name`, `description`, `authors`, `contact/*`, `icon`, `entrypoints/{main,client}`, `mixins` (adjust `modid.mixins.json`)
 - rename `src/main/resources/modid.mixins.json`
 - rename classes `org.example.ExampleMod` and `org.example.client.ExampleModClient`
+- rename folder `src/main/resources/assets/modid`, insert your custom modid
 
 ## Versioning
 This boilerplate uses the [`gradle-build-utils`](https://github.com/LCLPYT/GradleBuildUtils) Gradle plugin, which will determine the current version from the latest Git tag.
