@@ -75,7 +75,7 @@ publishing {
             }
 
             pom {
-                name = 'Mod name'
+                name = 'Example mod'
                 description = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr...'
             }
         }

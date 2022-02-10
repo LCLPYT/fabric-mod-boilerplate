@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "modid",
+  "version": "${version}",
+
+  "name": "Example mod",
+  "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr...",
+  "authors": [
+    "LCLP"
+  ],
+  "contact": {
+    "homepage": "https://github.com/LCLPYT/fabric-mod-boilerplate",
+    "sources": "https://github.com/LCLPYT/fabric-mod-boilerplate"
+  },
+
+  "license": "MIT",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "org.example.modid.ExampleMod"
+    ],
+    "client": [
+      "org.example.modid.client.ExampleModClient"
+    ]
+  },
+  "mixins": [
+    "modid.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.12.12",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {}
+}
