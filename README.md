@@ -9,6 +9,7 @@ Change `maven-group` and `archives_base_name`; configure Fabric versions if need
 - rename `src/main/resources/modid.mixins.json`
 - rename classes `org.example.ExampleMod` and `org.example.client.ExampleModClient`
 - rename folder `src/main/resources/assets/modid`, insert your custom modid
+- `build.gradle`: Adjust `publishing.publications.mavenJava.pom.{name,description}`
 
 ## Versioning
 This boilerplate uses the [`gradle-build-utils`](https://github.com/LCLPYT/GradleBuildUtils) Gradle plugin, which will determine the current version from the latest Git tag.
