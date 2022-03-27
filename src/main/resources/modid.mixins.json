@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.example.modid.asm.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "client": [],
   "injectors": {
     "defaultRequire": 1
