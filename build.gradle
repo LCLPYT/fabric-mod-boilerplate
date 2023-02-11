@@ -1,12 +1,13 @@
 plugins {
-    id 'fabric-loom'
-    id 'maven-publish'
-    id 'gradle-build-utils'
+	id 'fabric-loom' version '1.1-SNAPSHOT'
+	id 'maven-publish'
+	id 'gradle-build-utils' version '1.1.0'
 }
 
-Properties props = loadProperties.call('publish.properties')
+Properties props = loadProperties.call('publish.properties') as Properties
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = gitVersion.call()
@@ -20,45 +21,71 @@ repositories {
     }
 }
 
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        modid {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+    runs {
+        // This adds a new gradle task that runs the datagen API: "gradlew runDatagen"
+        datagen {
+            inherit server
+            name "Data Generation"
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
+            vmArg "-Dfabric-api.datagen.modid=testmod"
+ 
+            runDir "build/datagen"
+        }
+    }
+}
+
+// Add the generated resources to the main source set
+sourceSets {
+    main {
+        resources {
+            srcDirs += [
+                    'src/main/generated'
+            ]
+        }
+    }
+}
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     /* other Java dependencies */
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 processResources {
-    inputs.property "version", project.version
+	inputs.property "version", project.version
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-
-    // The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
-    // JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
-    // We'll use that if it's available, but otherwise we'll use the older option.
-    def targetVersion = 17
-    if (JavaVersion.current().isJava9Compatible()) {
-        it.options.release.set(targetVersion)
-    }
+	it.options.release = 17
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present
-    withSourcesJar()
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	withSourcesJar()
 }
 
 jar {
-    from("LICENSE.md") {
-        rename { "${it}_${project.archivesBaseName}"}
-    }
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
 }
 
 // configure the maven publication
@@ -70,8 +97,8 @@ publishing {
             from components.java
 
             pom {
-                name = 'Example mod'
-                description = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr...'
+                name = 'Test Mod'
+                description = 'This is an example description! Tell everyone what your mod is about!'
             }
         }
     }
