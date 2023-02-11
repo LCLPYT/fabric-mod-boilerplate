@@ -1,5 +1,5 @@
 # fabric-mod-boilerplate
-A boilerplate to quickly setup a fabric mod.
+A boilerplate to setup a fabric mod quickly.
 
 ## Needed configuration
 - `gradle.properties`:
