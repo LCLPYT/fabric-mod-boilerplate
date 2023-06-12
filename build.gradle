@@ -1,16 +1,16 @@
 plugins {
-	id 'fabric-loom' version '1.1-SNAPSHOT'
+	id 'fabric-loom' version '1.2-SNAPSHOT'
 	id 'maven-publish'
-	id 'gradle-build-utils' version '1.1.0'
+	id 'gradle-build-utils' version '1.4.0'
 }
 
-Properties props = loadProperties.call('publish.properties') as Properties
+Properties props = buildUtils.loadProperties('publish.properties')
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = gitVersion.call()
+version = buildUtils.gitVersion()
 group = project.maven_group
 
 repositories {
@@ -63,7 +63,20 @@ dependencies {
 
     /* other Java dependencies */
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+    /* testing dependencies */
+// choose either:
+// - plain junit-jupiter
+//    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+//    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+// - or fabric-loader junit, for use with Minecraft classes; above dependencies are transitive with this
+//    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
 }
+
+// unit testing via junit
+//test {
+//    useJUnitPlatform()
+//}
 
 processResources {
 	inputs.property "version", project.version
@@ -74,7 +87,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.release.convention(17)
 }
 
 java {
@@ -94,7 +107,8 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId = project.archives_base_name
 
-            from components.java
+            artifact remapJar
+            artifact remapSourcesJar
 
             pom {
                 name = 'Test Mod'
