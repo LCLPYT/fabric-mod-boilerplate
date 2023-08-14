@@ -100,10 +100,6 @@ jar {
 	}
 }
 
-remapSourcesJar {
-    dependsOn sourcesJar
-}
-
 // configure the maven publication
 publishing {
     publications {
