@@ -11,6 +11,7 @@ Change `maven-group` and `archives_base_name`; configure Fabric versions if need
 - rename folder `src/main/resources/assets/testmod`, insert your modid
 - `build.gradle`: Adjust `publishing.publications.mavenJava.pom.{name,description}`, `loom.runs.datagen.vmArg[Dfabric-api.datagen.modid]`
 - `src/{main,client}/resources/testmod.mixins.json`: Adjust the `package` property
+- `settings.gradle` change rootProject.name value
 
 ## Versioning
 This boilerplate uses the [`gradle-build-utils`](https://github.com/LCLPYT/GradleBuildUtils) Gradle plugin, which will determine the current version from the latest Git tag.
