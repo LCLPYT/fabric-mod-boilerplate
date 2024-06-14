@@ -22,7 +22,7 @@ public class ExampleMod implements ModInitializer {
 	 * @return An identifier of this mod with the given path.
 	 */
 	public static Identifier identifier(String path) {
-		return new Identifier(MOD_ID, path);
+		return Identifier.of(MOD_ID, path);
 	}
 
 	/**
