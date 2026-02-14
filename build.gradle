@@ -1,19 +1,19 @@
 plugins {
-	id 'fabric-loom' version "${loom_version}"
-	id 'maven-publish'
-	id 'gradle-build-utils' version '1.7.0'
+    alias(libs.plugins.fabric.loom)
+    alias(libs.plugins.maven.publish)
+    alias(libs.plugins.gradle.build.tools)
 }
 
 Properties props = buildUtils.loadProperties('publish.properties')  // will be empty, if the file is missing
 
-version = "${project.mod_version}+${project.minecraft_version}"
+version = "${project.mod_version}+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
 base {
     archivesName = project.archives_base_name
 }
 
-int javaVersion = Integer.parseInt(project.java_version)
+int javaVersion = Integer.parseInt(libs.versions.java.get())
 
 repositories {
     maven {
@@ -37,36 +37,31 @@ fabricApi {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    minecraft(libs.minecraft)
+
     mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation(libs.fabric.loader)
+    modImplementation(libs.fabric.api)
 
-//// if you want to test your code, choose either:
-//// - plain junit-jupiter (default):
-//    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-//    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-//// - or fabric-loader junit, if you use Minecraft classes in your tests
-//    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+    testImplementation(libs.fabric.loader.junit)
 }
 
-// required when using tests
-//test {
-//    useJUnitPlatform()
-//}
+test {
+    useJUnitPlatform()
+}
 
 processResources {
 	inputs.property "version", project.version
-    inputs.property "loader_version", project.loader_version
+    inputs.property "loader_version", libs.versions.fabric.loader.get()
     inputs.property "minecraft_compat", project.minecraft_compat
-    inputs.property "java_version", javaVersion
+    inputs.property "java_version", libs.versions.java.get()
 
 	filesMatching("fabric.mod.json") {
 		expand "version": project.version,
-                "loader_version": project.loader_version,
+                "loader_version": libs.versions.fabric.loader.get(),
                 "minecraft_compat": project.minecraft_compat,
-                "java_version": project.java_version
+                "java_version": libs.versions.java.get()
 	}
 }
 
@@ -75,7 +70,6 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     withSourcesJar()
 
     sourceCompatibility = JavaVersion.toVersion(javaVersion)
@@ -88,7 +82,6 @@ jar {
 	}
 }
 
-// configure the maven publication
 publishing {
     publications {
         mavenJava(MavenPublication) {
