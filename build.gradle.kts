@@ -1,6 +1,7 @@
 import java.util.Properties
 
 plugins {
+    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.fabric.loom)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.gradle.build.tools)
@@ -11,8 +12,10 @@ val props: Properties = buildUtils.loadProperties("publish.properties")  // will
 version = "${project.property("mod_version")!!}+${libs.versions.minecraft.get()}"
 group = project.property("maven_group")!!
 
+val modId = project.property("mod_id")!!.toString()
+
 base {
-    archivesName.set(project.property("mod_id")!!.toString())
+    archivesName.set(modId)
 }
 
 val javaVersion = libs.versions.java.get().toInt()
@@ -27,7 +30,7 @@ loom {
     splitEnvironmentSourceSets()
 
     mods {
-        register(project.property("mod_id")!!.toString()) {
+        register(modId) {
             sourceSet(sourceSets.getByName("main"))
             sourceSet(sourceSets.getByName("client"))
         }
@@ -45,8 +48,10 @@ dependencies {
 
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.api)
+    modImplementation(libs.fabric.language.kotlin)
 
     testImplementation(libs.fabric.loader.junit)
+    testImplementation(libs.kotlin.test)
 }
 
 tasks.test {
@@ -59,6 +64,7 @@ tasks.processResources {
         "loader_version" to libs.versions.fabric.loader.get(),
         "minecraft_compat" to project.property("minecraft_compat")!!,
         "java_version" to javaVersion,
+        "fabric_language_kotlin" to libs.versions.fabric.language.kotlin.get(),
     )
 
     filesMatching("fabric.mod.json") {
@@ -66,7 +72,26 @@ tasks.processResources {
             "version" to project.version,
             "loader_version" to libs.versions.fabric.loader.get(),
             "minecraft_compat" to project.property("minecraft_compat")!!,
-            "java_version" to javaVersion
+            "java_version" to javaVersion,
+            "fabric_language_kotlin" to libs.versions.fabric.language.kotlin.get(),
+        )
+    }
+
+    filesMatching("$modId.mixins.json") {
+        expand(
+            "java_version" to javaVersion,
+        )
+    }
+}
+
+tasks.named<ProcessResources>("processClientResources") {
+    inputs.properties(
+        "java_version" to javaVersion,
+    )
+
+    filesMatching("$modId.client.mixins.json") {
+        expand(
+            "java_version" to javaVersion,
         )
     }
 }
@@ -80,6 +105,10 @@ java {
 
     sourceCompatibility = JavaVersion.toVersion(javaVersion)
     targetCompatibility = JavaVersion.toVersion(javaVersion)
+}
+
+kotlin {
+    jvmToolchain(javaVersion)
 }
 
 tasks.jar {
