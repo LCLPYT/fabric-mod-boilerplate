@@ -44,11 +44,9 @@ fabricApi {
 dependencies {
     minecraft(libs.minecraft)
 
-    mappings(loom.officialMojangMappings())
-
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
-    modImplementation(libs.fabric.language.kotlin)
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.api)
+    implementation(libs.fabric.language.kotlin)
 
     testImplementation(libs.fabric.loader.junit)
     testImplementation(libs.kotlin.test)
