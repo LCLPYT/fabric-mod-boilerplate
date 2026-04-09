@@ -1,5 +1,6 @@
-import java.util.Properties
 import org.apache.tools.ant.filters.ReplaceTokens
+import work.lclpnet.build.task.GithubDeploymentTask
+import java.util.*
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -9,6 +10,7 @@ plugins {
 }
 
 val props: Properties = buildUtils.loadProperties("publish.properties")  // will be empty, if the file is missing
+val env: Map<String, String> = System.getenv()
 
 version = "${project.property("mod_version")!!}+${libs.versions.minecraft.get()}"
 group = project.property("maven_group")!!
@@ -120,6 +122,24 @@ tasks.jar {
     }
 }
 
+tasks.register<GithubDeploymentTask>("github") {
+    val artifactTask = tasks.getByName<Jar>("jar")
+
+    dependsOn(artifactTask)
+
+    config {
+        token = requireNotNull(env["GITHUB_TOKEN"]) { "Undefined env variable 'GITHUB_TOKEN'" }
+        repository = requireNotNull(env["GITHUB_REPOSITORY"]) { "Undefined env variable 'GITHUB_REPOSITORY'" }
+    }
+
+    release {
+        title = "[${libs.versions.minecraft.get()}] ${project.name} ${project.version}"
+        tag = project.version.toString()
+    }
+
+    assets.add(artifactTask.archiveFile.get())
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
@@ -128,8 +148,8 @@ publishing {
             from(components["java"])
 
             pom {
-                name.set("Test Mod")
-                description.set("This is an example description! Tell everyone what your mod is about!")
+                name.set(project.property("artifact_name")!!.toString())
+                description.set(project.property("artifact_description")!!.toString())
             }
         }
     }
