@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -57,40 +58,44 @@ tasks.test {
 }
 
 tasks.processResources {
-    inputs.properties(
+    val tokens = mapOf(
         "version" to project.version,
         "loader_version" to libs.versions.fabric.loader.get(),
         "minecraft_compat" to project.property("minecraft_compat")!!,
-        "java_version" to javaVersion,
+        "java_version" to javaVersion.toString(),
         "fabric_language_kotlin" to libs.versions.fabric.language.kotlin.get(),
     )
 
+    inputs.properties(tokens)
+
     filesMatching("fabric.mod.json") {
-        expand(
-            "version" to project.version,
-            "loader_version" to libs.versions.fabric.loader.get(),
-            "minecraft_compat" to project.property("minecraft_compat")!!,
-            "java_version" to javaVersion,
-            "fabric_language_kotlin" to libs.versions.fabric.language.kotlin.get(),
-        )
+        expand(tokens)
     }
 
     filesMatching("$modId.mixins.json") {
-        expand(
-            "java_version" to javaVersion,
-        )
+        // only replace tokens with braces because mixins may reference inner classes with a '$' symbol
+        filter(ReplaceTokens::class, mapOf(
+            "beginToken" to $$"${",
+            "endToken" to "}",
+            "tokens" to tokens
+        ))
     }
 }
 
 tasks.named<ProcessResources>("processClientResources") {
-    inputs.properties(
-        "java_version" to javaVersion,
+    val tokens = mapOf(
+        "java_version" to javaVersion.toString(),
     )
 
+    inputs.properties(tokens)
+
     filesMatching("$modId.client.mixins.json") {
-        expand(
-            "java_version" to javaVersion,
-        )
+        // only replace tokens with braces because mixins may reference inner classes with a '$' symbol
+        filter(ReplaceTokens::class, mapOf(
+            "beginToken" to $$"${",
+            "endToken" to "}",
+            "tokens" to tokens
+        ))
     }
 }
 
