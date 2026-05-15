@@ -123,13 +123,15 @@ tasks.jar {
 }
 
 tasks.register<GithubDeploymentTask>("github") {
+    description = "Create a new GitHub release and uploads the built jar to github"
+
     val artifactTask = tasks.getByName<Jar>("jar")
 
     dependsOn(artifactTask)
 
     config {
-        token = requireNotNull(env["GITHUB_TOKEN"]) { "Undefined env variable 'GITHUB_TOKEN'" }
-        repository = requireNotNull(env["GITHUB_REPOSITORY"]) { "Undefined env variable 'GITHUB_REPOSITORY'" }
+        token = env["GITHUB_TOKEN"]
+        repository = env["GITHUB_REPOSITORY"]
     }
 
     release {
